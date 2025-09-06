@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Modality } from "@google/genai";
 import { PROMPT_DIFFICULTY_LEVELS, GUESSING_SYSTEM_PROMPT } from '../constants';
 import { GeneratedImage } from '../types';
 
@@ -23,54 +23,52 @@ export const generateImagesForGame = async (round: number): Promise<GeneratedIma
 
     if (round <= 3) {
         prompts = PROMPT_DIFFICULTY_LEVELS[0];
-        promptStyle = "simple, iconic black and white line drawing of";
+        promptStyle = "Draw a simple, iconic black and white line drawing";
     } else if (round <= 7) {
         prompts = PROMPT_DIFFICULTY_LEVELS[1];
-        promptStyle = "detailed black and white line drawing of";
+        promptStyle = "Draw a detailed black and white line drawing";
     } else {
         prompts = PROMPT_DIFFICULTY_LEVELS[2];
-        promptStyle = "3d render style black and white line drawing of";
+        promptStyle = "Draw a 3d render style black and white line drawing";
     }
 
-    const generatedImages: GeneratedImage[] = [];
     const shuffledPrompts = shuffleArray(prompts);
-    let promptIndex = 0;
+    const promptsToTry = shuffledPrompts.slice(0, 4);
 
-    // Keep trying prompts until we have 4 images or run out of prompts.
-    while (generatedImages.length < 4 && promptIndex < shuffledPrompts.length) {
-        const prompt = shuffledPrompts[promptIndex];
-        const fullPrompt = `${promptStyle} ${prompt}, on a white background`;
+    if (promptsToTry.length < 4) {
+        throw new Error("Could not find enough unique prompts for the game.");
+    }
 
-        try {
-            const response = await ai.models.generateImages({
-                model: 'imagen-4.0-generate-001',
-                prompt: fullPrompt,
-                config: {
-                    numberOfImages: 1,
-                    outputMimeType: 'image/png',
-                    aspectRatio: '1:1',
-                },
-            });
+    const promptList = promptsToTry.map((p, i) => `${i + 1}. A drawing of a ${p}`).join('\n');
+    const fullPrompt = `${promptStyle}. Generate 4 separate images. Return exactly 4 image parts in your response, in the following order:\n${promptList}`;
+    
+    const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash-image-preview',
+        contents: fullPrompt,
+        config: {
+            responseModalities: [Modality.IMAGE, Modality.TEXT],
+        },
+    });
 
-            if (response.generatedImages && response.generatedImages.length > 0) {
-                const base64ImageBytes: string = response.generatedImages[0].image.imageBytes;
-                generatedImages.push({
-                    prompt: prompt,
-                    base64: base64ImageBytes,
-                });
-            } else {
-                console.warn(`Image generation failed for prompt: "${prompt}". No images returned.`);
-            }
-        } catch (error) {
-            console.error(`Error generating image for prompt: "${prompt}"`, error);
+    const imageParts = response.candidates?.[0]?.content?.parts?.filter(part => part.inlineData);
+
+    if (!imageParts || imageParts.length < 4) {
+        const textPart = response.candidates?.[0]?.content?.parts?.find(part => part.text)?.text;
+        throw new Error(`Model did not return 4 images as requested. It returned ${imageParts?.length || 0}. Model's text response: "${textPart || 'None'}"`);
+    }
+
+    // We are assuming the model respects the prompt and returns images in the requested order.
+    const generatedImages = imageParts.slice(0, 4).map((part, index) => {
+        const base64ImageBytes = part.inlineData?.data;
+        if (!base64ImageBytes) {
+            // This should not be reached due to the filter, but it's a good safeguard.
+            throw new Error(`API response included an image part without data at index ${index}.`);
         }
-        
-        promptIndex++;
-    }
-
-    if (generatedImages.length < 4) {
-        throw new Error("Could not generate enough images for the game after trying multiple prompts.");
-    }
+        return {
+            prompt: promptsToTry[index],
+            base64: base64ImageBytes,
+        };
+    });
 
     return generatedImages;
 };

@@ -5,9 +5,12 @@ export const MAX_LINES = 1;
 export const PROMPT_DIFFICULTY_LEVELS: string[][] = [
   // Level 1: Simple, iconic shapes (30 prompts)
   [
-    "cat", "house", "car", "tree", "sun", "cup", "cloud", "fish", "star", "boat",
-    "ball", "key", "spoon", "door", "window", "bed", "table", "leaf", "moon", "mountain",
-    "rainbow", "mushroom", "snail", "snake", "egg", "apple", "arrow", "circle", "square", "triangle"
+    "cat", "dog", "bird", "fish", "butterfly",
+    "house", "car", "bicycle", "boat", "train",
+    "tree", "flower", "leaf", "mushroom", "mountain",
+    "sun", "moon", "star", "cloud", "rainbow",
+    "cup", "bottle", "spoon", "chair", "table",
+    "key", "lock", "ladder", "balloon", "umbrella"
   ],
   // Level 2: More detailed objects (30 prompts)
   [
