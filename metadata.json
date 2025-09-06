@@ -1,0 +1,5 @@
+{
+  "name": "Guess My Drawing AI",
+  "description": "A web-based multimodal AI game where you draw a picture and Gemini tries to guess which of four reference images you were copying. It's a fun, creative challenge powered by Google's Gemini API.",
+  "requestFramePermissions": []
+}
