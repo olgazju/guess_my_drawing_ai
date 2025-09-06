@@ -21,9 +21,18 @@ const getFriendlyErrorMessage = (error: unknown): string => {
     return `An unexpected error occurred. Please try again. Details: ${message}`;
 };
 
-const GameHeader: React.FC<{ round: number; score: Score }> = ({ round, score }) => (
+const GameHeader: React.FC<{ round: number; score: Score, onRestart: () => void }> = ({ round, score, onRestart }) => (
     <div className="flex justify-between items-center mb-4 p-4 border-b-2 border-slate-200">
-        <h1 className="text-2xl md:text-3xl font-bold text-teal-800">Guess My Drawing</h1>
+        <div className="flex items-center gap-4">
+             <button 
+                onClick={onRestart}
+                className="bg-amber-500 text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-amber-600 transition-transform transform hover:scale-105 shadow-md"
+                aria-label="Restart Game"
+            >
+                Restart
+            </button>
+            <h1 className="text-2xl md:text-3xl font-bold text-teal-800 hidden sm:block">Guess My Drawing</h1>
+        </div>
         <div className="text-right">
             <div className="font-bold text-lg">Round: <span className="text-teal-600">{round}/{MAX_ROUNDS}</span></div>
             <div className="text-sm text-slate-500">Player: {score.player} | AI: {score.ai}</div>
@@ -207,7 +216,7 @@ export default function App() {
                 const resultStyling = getResultStyling();
 
                 return <>
-                    <GameHeader round={round} score={score} />
+                    <GameHeader round={round} score={score} onRestart={handleStartGame} />
                     <GameStatus gameState={gameState} errorMessage={errorMessage} />
                     <div className="grid md:grid-cols-2 gap-8 items-start">
                         <div className="flex flex-col gap-4">
