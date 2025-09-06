@@ -23,17 +23,18 @@ export const PROMPT_DIFFICULTY_LEVELS: string[][] = [
     "windmill", "watering can", "coffee mug with steam", "a pair of scissors", 
     "open book on a stand", "butterfly with patterned wings", "spider in a web", "cactus in a pot"
   ],
-  // Level 3: Complex / 3D-style objects (30 prompts)
+  // Level 3: Weird & imaginative concepts (30 prompts)
   [
-    "apple with a bite taken out", "crescent moon with a face", "a pair of socks", 
-    "ornate door", "dining table with two chairs", "leaning ladder", "sunglasses", 
-    "slice of pepperoni pizza", "cartoon rocket ship", "steam train",
-    "bowl of fruit (apple, banana, orange)", "stack of pancakes with syrup", "computer mouse and keyboard",
-    "toolbox with a hammer sticking out", "chess knight piece", "potted plant with detailed leaves",
-    "birdcage with a bird inside", "motorcycle from the side", "microscope", "sewing machine",
-    "grandfather clock", "violin with a bow", "vintage typewriter", "a single roller skate",
-    "open treasure chest with coins", "glowing lantern", "knight's helmet", "spiral staircase",
-    "rocking horse", "globe on a stand"
+    "an anxious goblin in baroque style", "a melancholic robot tending a zen garden", "a steampunk owl with glowing gears for eyes",
+    "a cosmic jellyfish floating through a nebula", "a knight riding a giant snail into battle", "a library where the books have wings and fly",
+    "a Victorian-era astronaut sipping tea on the moon", "a haunted grandfather clock with a ghostly face", "a cybernetic dragon forged from chrome and neon",
+    "a treehouse growing on the back of a colossal turtle", "a sentient teapot pouring starlight", "a jazz band of skeletons in a smoky club",
+    "a floating island held aloft by giant crystals", "a garden of glass flowers that chime in the wind", "a detective octopus wearing a fedora and trench coat",
+    "a mushroom city with glowing windows at night", "a post-apocalyptic squirrel in makeshift armor", "a cat wizard casting a spell from a glowing spellbook",
+    "a submarine shaped like a narwhal exploring the deep", "a whimsical candy-powered locomotive", "a chef made of vegetables cooking a meal",
+    "a chameleon changing its color to match a famous painting", "a sentient cloud raining tiny, colorful stars", "a medieval castle built inside a giant seashell",
+    "a gramophone that plays the sounds of the forest", "a sad clown juggling planets", "a mechanical heart with intricate clockwork inside",
+    "a lighthouse on a cliff made of stacked books", "a samurai warrior with a laser katana", "a singing cactus in a desert mariachi band"
   ]
 ];
 
