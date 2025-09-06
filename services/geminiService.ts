@@ -23,13 +23,13 @@ export const generateImagesForGame = async (round: number): Promise<GeneratedIma
 
     if (round <= 3) {
         prompts = PROMPT_DIFFICULTY_LEVELS[0];
-        promptStyle = "Draw a simple, iconic black and white line drawing";
+        promptStyle = "a simple, iconic black and white line drawing";
     } else if (round <= 7) {
         prompts = PROMPT_DIFFICULTY_LEVELS[1];
-        promptStyle = "Draw a detailed black and white line drawing";
+        promptStyle = "a detailed black and white line drawing";
     } else {
         prompts = PROMPT_DIFFICULTY_LEVELS[2];
-        promptStyle = "Draw a 3d render style black and white line drawing";
+        promptStyle = "a 3d render style black and white line drawing";
     }
 
     const shuffledPrompts = shuffleArray(prompts);
@@ -39,37 +39,31 @@ export const generateImagesForGame = async (round: number): Promise<GeneratedIma
         throw new Error("Could not find enough unique prompts for the game.");
     }
 
-    const promptList = promptsToTry.map((p, i) => `${i + 1}. A drawing of a ${p}`).join('\n');
-    const fullPrompt = `${promptStyle}. Generate 4 separate images. Return exactly 4 image parts in your response, in the following order:\n${promptList}`;
-    
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image-preview',
-        contents: fullPrompt,
-        config: {
-            responseModalities: [Modality.IMAGE, Modality.TEXT],
-        },
+    // Create an array of promises, one for each image generation request.
+    const imagePromises = promptsToTry.map(prompt => {
+        const fullPrompt = `Generate ${promptStyle} of a ${prompt}.`;
+        return ai.models.generateContent({
+            model: 'gemini-2.5-flash-image-preview',
+            contents: fullPrompt,
+            config: {
+                responseModalities: [Modality.IMAGE],
+            },
+        }).then(response => {
+            const imagePart = response.candidates?.[0]?.content?.parts?.find(part => part.inlineData);
+            const base64ImageBytes = imagePart?.inlineData?.data;
+            if (!base64ImageBytes) {
+                const textPart = response.candidates?.[0]?.content?.parts?.find(part => part.text)?.text;
+                throw new Error(`Model did not return an image for prompt "${prompt}". Model's text response: "${textPart || 'None'}"`);
+            }
+            return {
+                prompt: prompt,
+                base64: base64ImageBytes,
+            };
+        });
     });
 
-    const imageParts = response.candidates?.[0]?.content?.parts?.filter(part => part.inlineData);
-
-    if (!imageParts || imageParts.length < 4) {
-        const textPart = response.candidates?.[0]?.content?.parts?.find(part => part.text)?.text;
-        throw new Error(`Model did not return 4 images as requested. It returned ${imageParts?.length || 0}. Model's text response: "${textPart || 'None'}"`);
-    }
-
-    // We are assuming the model respects the prompt and returns images in the requested order.
-    const generatedImages = imageParts.slice(0, 4).map((part, index) => {
-        const base64ImageBytes = part.inlineData?.data;
-        if (!base64ImageBytes) {
-            // This should not be reached due to the filter, but it's a good safeguard.
-            throw new Error(`API response included an image part without data at index ${index}.`);
-        }
-        return {
-            prompt: promptsToTry[index],
-            base64: base64ImageBytes,
-        };
-    });
-
+    // Wait for all promises to resolve.
+    const generatedImages = await Promise.all(imagePromises);
     return generatedImages;
 };
 

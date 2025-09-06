@@ -14,7 +14,7 @@ const LoadingSpinner: React.FC = () => {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="animate-spin text-indigo-500"
+        className="animate-spin text-teal-500"
         aria-label="Loading"
         role="status"
       >

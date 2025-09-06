@@ -15,26 +15,26 @@ const ImageGrid: React.FC<ImageGridProps> = ({ images, onSelect, canSelect, sele
   const getBorderClass = (index: number) => {
     if (isResultState) {
         if (index === selectedImageIndex && index === aiGuessIndex) {
-            return 'border-green-500 ring-4 ring-green-500'; // Correct guess
+            return 'border-emerald-500 ring-4 ring-emerald-300'; // Correct guess
         }
         if (index === selectedImageIndex) {
-            return 'border-blue-500 ring-4 ring-blue-500'; // User's choice
+            return 'border-sky-500 ring-4 ring-sky-300'; // User's choice
         }
         if (index === aiGuessIndex) {
-            return 'border-red-500 ring-4 ring-red-500'; // AI's incorrect guess
+            return 'border-rose-500 ring-4 ring-rose-300'; // AI's incorrect guess
         }
-        return 'border-slate-300 opacity-50';
+        return 'border-slate-300/50 opacity-50';
     }
 
     if (selectedImageIndex === index) {
-        return 'border-indigo-500 ring-4 ring-indigo-500';
+        return 'border-teal-500 ring-4 ring-teal-300';
     }
     
     if (canSelect) {
-        return 'border-slate-300 hover:border-indigo-400 hover:ring-2 hover:ring-indigo-400';
+        return 'border-slate-300/50 hover:border-teal-400 hover:ring-2 hover:ring-teal-200';
     }
 
-    return 'border-slate-300 opacity-50';
+    return 'border-slate-300/50 opacity-50';
   };
 
   if (!images || images.length === 0) {
@@ -53,7 +53,7 @@ const ImageGrid: React.FC<ImageGridProps> = ({ images, onSelect, canSelect, sele
         <div
           key={index}
           onClick={() => canSelect && onSelect(index)}
-          className={`relative aspect-square bg-white p-2 rounded-lg border-4 transition-all duration-300 ${getBorderClass(index)} ${canSelect ? 'cursor-pointer' : ''}`}
+          className={`relative aspect-square bg-white/60 p-2 rounded-lg border-4 transition-all duration-300 ${getBorderClass(index)} ${canSelect ? 'cursor-pointer' : ''}`}
         >
           <img
             src={`data:image/png;base64,${image.base64}`}
